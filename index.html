@@ -320,8 +320,10 @@ function calcOF(){
 uint8 saldoJuan   = ${a};
 uint8 saldoAndres = ${b};
 uint8 total = saldoJuan + saldoAndres;
-// Esperabas ${sum} en la cuenta...
-// el contrato dice: ${over ? res+' ← INCORRECTO (overflow)' : sum+' ← correcto'}
+
+emit Log("Esperabas:", ${sum});
+emit Log("El contrato dice:", total);
+// → ${over ? 'total = '+res+'  ← INCORRECTO (overflow)' : 'total = '+sum+'  ← correcto'}
 
 // Solidity >= 0.8  (protección automática)
 // Si el total > 255 → el contrato hace revert automáticamente`);
