@@ -163,7 +163,7 @@ pre.code .num { color:#fab387; }
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── syntax highlight (line by line, no regex on tags) ─────────────────────
-const KW = new Set(['pragma','solidity','contract','function','mapping','public','external','view','returns','modifier','require','emit','memory','uint256','uint8','int256','bool','address','bytes32','string','true','false','return','onlyOwner','event','struct']);
+const KW = new Set(['pragma','solidity','contract','function','mapping','public','external','view','returns','modifier','require','emit','memory','uint256','uint8','int256','bool','address','bytes32','string','true','false','return','onlyOwner','event','struct','console','log']);
 
 function hlLine(raw){
   // tokenize: split on spaces and punctuation, keep delimiters
@@ -321,9 +321,8 @@ uint8 saldoJuan   = ${a};
 uint8 saldoAndres = ${b};
 uint8 total = saldoJuan + saldoAndres;
 
-emit Log("Esperabas:", ${sum});
-emit Log("El contrato dice:", total);
-// → ${over ? 'total = '+res+'  ← INCORRECTO (overflow)' : 'total = '+sum+'  ← correcto'}
+console.log(total);
+// → ${over ? res+'   ← INCORRECTO (overflow)' : sum+'   ← correcto'}
 
 // Solidity >= 0.8  (protección automática)
 // Si el total > 255 → el contrato hace revert automáticamente`);
