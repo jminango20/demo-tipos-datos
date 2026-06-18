@@ -136,14 +136,14 @@ pre.code .num { color:#fab387; }
 
     <!-- OVERFLOW -->
     <div id="p-ovf" class="panel">
-      <div class="slbl">uint8 — rango válido: 0 a 255</div>
+      <div class="slbl">uint8 — rango válido: 0 a 255 · saldo de una cuenta</div>
       <div class="dbox">
-        <div class="rrow"><label>Valor A</label><input type="range" min="0" max="255" value="200" id="vA" oninput="calcOF()" step="1"><span class="rval" id="oA">200</span></div>
-        <div class="rrow"><label>Valor B</label><input type="range" min="0" max="255" value="100" id="vB" oninput="calcOF()" step="1"><span class="rval" id="oB">100</span></div>
+        <div class="rrow"><label>Saldo Juan</label><input type="range" min="0" max="255" value="200" id="vA" oninput="calcOF()" step="1"><span class="rval" id="oA">200</span></div>
+        <div class="rrow"><label>Saldo Andrés</label><input type="range" min="0" max="255" value="100" id="vB" oninput="calcOF()" step="1"><span class="rval" id="oB">100</span></div>
         <div class="chips" id="ofchips"></div>
       </div>
       <div id="ofcode"></div>
-      <div class="note">⚠ Antes de Solidity 0.8, contratos reales fueron hackeados por este motivo. OpenZeppelin creó SafeMath para solucionarlo. Desde Solidity 0.8+ la protección está activada por defecto.</div>
+      <div class="note">⚠ Si saldoJuan y saldoAndres fueran cuentas reales en un banco descentralizado, este error significaría perder dinero de verdad. Antes de Solidity 0.8, contratos reales fueron hackeados por este motivo. OpenZeppelin creó SafeMath para solucionarlo. Desde Solidity 0.8+ la protección está activada por defecto.</div>
     </div>
 
     <!-- QUIZ -->
@@ -313,17 +313,18 @@ function calcOF(){
   document.getElementById('oB').textContent=b;
   const sum=a+b, over=sum>255, res=sum%256;
   document.getElementById('ofchips').innerHTML=
-    `<span class="chip cn">${a} + ${b} = ${sum}</span>`+
-    `<span class="chip ${over?'cov':'cok'}">${over?'¡Overflow! → resultado real: '+res:'✓ OK — dentro del rango'}</span>`;
+    `<span class="chip cn">Juan (${a}) + Andrés (${b}) = ${sum}</span>`+
+    `<span class="chip ${over?'cov':'cok'}">${over?'¡Overflow! → el contrato registra: '+res:'✓ OK — dentro del rango'}</span>`;
   document.getElementById('ofcode').innerHTML=codeBlock(
 `// Solidity < 0.8  (sin SafeMath)
-uint8 a = ${a};
-uint8 b = ${b};
-uint8 result = a + b;
-// result = ${over ? res+' ← INCORRECTO (overflow)' : sum+' ← correcto'}
+uint8 saldoJuan   = ${a};
+uint8 saldoAndres = ${b};
+uint8 total = saldoJuan + saldoAndres;
+// Esperabas ${sum} en la cuenta...
+// el contrato dice: ${over ? res+' ← INCORRECTO (overflow)' : sum+' ← correcto'}
 
 // Solidity >= 0.8  (protección automática)
-// Si sum > 255 → el contrato hace revert automáticamente`);
+// Si el total > 255 → el contrato hace revert automáticamente`);
 }
 
 // ── quiz ──────────────────────────────────────────────────────────────────
