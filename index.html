@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Interactivo — Tipos de Datos en Solidity</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#fff; --bg2:#f5f5f3; --bg3:#ebebea;
+  --tx:#1a1a1a; --tx2:#66665f; --tx3:#99998f;
+  --bd:rgba(0,0,0,0.11); --bd2:rgba(0,0,0,0.20);
+  --pm:#9E1A40; --pd:#821535; --pl:#F9EEF1; --pb:#D4899A;
+  --gbg:#EAF3DE; --gtx:#27500A; --gbd:#639922;
+  --rbg:#FCEBEB; --rtx:#791F1F; --rbd:#E24B4A;
+  --abg:#FAEEDA; --atx:#633806; --abd:#FAC775;
+  --tbg:#E1F5EE; --ttx:#085041;
+  --r:8px; --rl:12px;
+}
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#eeeee8; color:var(--tx); min-height:100vh; display:flex; justify-content:center; padding:2rem 1rem; }
+.wrap { width:100%; max-width:820px; }
+
+.hdr { background:linear-gradient(135deg,#9E1A40 0%,#821535 100%); border-radius:var(--rl); padding:1.25rem 1.75rem; margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; }
+.hdr h1 { font-size:19px; font-weight:500; color:#fff; }
+.hdr p { font-size:13px; color:rgba(255,255,255,0.75); margin-top:3px; }
+.uees { background:var(--pl); color:var(--pd); border:0.5px solid var(--pb); border-radius:99px; padding:5px 14px; font-size:12px; font-weight:500; white-space:nowrap; }
+
+.card { background:var(--bg); border-radius:var(--rl); border:0.5px solid var(--bd); padding:1.5rem 1.75rem; }
+.badge { display:inline-block; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:500; margin-right:4px; }
+.bs { background:rgba(255,255,255,0.18); color:#fff; border:0.5px solid rgba(255,255,255,0.35); }
+.bw { background:rgba(255,255,255,0.12); color:#fff; border:0.5px solid rgba(255,255,255,0.25); }
+
+.tabs { display:flex; gap:6px; margin-bottom:1.5rem; flex-wrap:wrap; }
+.tab { padding:7px 16px; border-radius:var(--r); border:0.5px solid var(--bd2); background:var(--bg); color:var(--tx2); font-size:13px; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; transition:all .15s; }
+.tab.on { background:var(--pm); color:var(--pl); border-color:var(--pm); }
+.tab:hover:not(.on) { background:var(--bg2); color:var(--tx); }
+
+.panel { display:none; }
+.panel.on { display:block; }
+
+.slbl { font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:var(--tx3); margin-bottom:10px; }
+
+.tgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px; margin-bottom:1.25rem; }
+.tcard { background:var(--bg); border:1.5px solid var(--bd); border-radius:var(--rl); padding:1rem; cursor:pointer; transition:all .15s; }
+.tcard:hover { border-color:var(--pm); background:#fdf2f4; transform:translateY(-1px); box-shadow:0 3px 10px rgba(83,74,183,0.12); }
+.tcard.on { border:2px solid var(--pm); background:#fceef1; box-shadow:0 3px 12px rgba(83,74,183,0.18); }
+.tclbl { font-size:10px; color:var(--tx2); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; font-weight:600; }
+.tcname { font-size:16px; font-weight:700; color:var(--pm); font-family:'Courier New',monospace; margin-bottom:5px; }
+.tcdesc { font-size:12px; color:var(--tx); line-height:1.55; }
+
+.dbox { background:var(--bg2); border-radius:var(--rl); padding:1.25rem; border:0.5px solid var(--bd); }
+.dtitle { font-size:13px; color:var(--tx2); margin-bottom:10px; }
+.dtitle strong { color:var(--tx); }
+
+/* ── code block ── */
+pre.code {
+  background:#1e1e2e;
+  border-radius:var(--r);
+  padding:1.1rem 1.25rem;
+  font-family:'Courier New',monospace;
+  font-size:13px;
+  line-height:1.85;
+  overflow-x:auto;
+  margin-top:10px;
+  color:#cdd6f4;
+  white-space:pre;
+}
+pre.code .kw  { color:#cba6f7; }
+pre.code .str { color:#a6e3a1; }
+pre.code .cmt { color:#585b70; font-style:italic; }
+pre.code .fn  { color:#89dceb; }
+pre.code .num { color:#fab387; }
+
+/* overflow lab */
+.rrow { display:flex; align-items:center; gap:12px; margin:12px 0; }
+.rrow label { font-size:13px; color:var(--tx2); min-width:80px; }
+.rrow input[type=range] { flex:1; accent-color:var(--pm); }
+.rval { font-size:15px; font-weight:500; min-width:50px; color:var(--pm); font-family:'Courier New',monospace; }
+.chips { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+.chip { border-radius:var(--r); padding:6px 14px; font-size:13px; font-family:'Courier New',monospace; border:0.5px solid; }
+.cn { background:var(--pl); color:var(--pd); border-color:var(--pb); }
+.cok{ background:var(--gbg); color:var(--gtx); border-color:var(--gbd); }
+.cov{ background:var(--rbg); color:var(--rtx); border-color:var(--rbd); }
+.note { font-size:12px; color:var(--atx); background:var(--abg); border-radius:var(--r); padding:8px 12px; margin-top:10px; border:0.5px solid var(--abd); line-height:1.6; }
+
+/* quiz */
+.pbar { height:4px; background:var(--bg3); border-radius:2px; margin-bottom:1.25rem; }
+.pfill { height:100%; background:var(--pm); border-radius:2px; transition:width .35s; }
+.srow { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1rem; }
+.schip { background:var(--bg2); border-radius:var(--r); padding:6px 14px; font-size:13px; color:var(--tx2); }
+.schip span { font-weight:500; color:var(--tx); }
+.qq { font-size:15px; font-weight:500; line-height:1.6; margin-bottom:1rem; }
+.qopts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:1rem; }
+.qopt { padding:10px 14px; border-radius:var(--r); border:0.5px solid var(--bd2); background:var(--bg); color:var(--tx); font-size:14px; cursor:pointer; text-align:left; font-family:'Courier New',monospace; transition:all .15s; }
+.qopt:hover:not(.lk) { border-color:var(--pm); background:var(--pl); color:var(--pd); }
+.qopt.ok { background:var(--gbg); color:var(--gtx); border-color:var(--gbd); }
+.qopt.no { background:var(--rbg); color:var(--rtx); border-color:var(--rbd); }
+.fb { font-size:13px; padding:10px 14px; border-radius:var(--r); margin-bottom:1rem; line-height:1.6; }
+.fbok { background:var(--gbg); color:var(--gtx); }
+.fbno { background:var(--rbg); color:var(--rtx); }
+.nrow { display:flex; gap:8px; margin-top:1rem; }
+.btnp { padding:9px 20px; border-radius:var(--r); background:var(--pm); color:var(--pl); border:none; font-size:14px; cursor:pointer; font-family:inherit; }
+.btnp:hover { opacity:.88; }
+.fin { text-align:center; padding:2rem 0; }
+.fsc { font-size:52px; font-weight:500; color:var(--pm); }
+.fmsg { font-size:15px; color:var(--tx2); margin:8px 0 1.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div>
+      <h1>Lab interactivo · Tipos de datos</h1>
+      <p>Tecnologías Disruptivas &nbsp;·&nbsp;
+        <span class="badge bs">Solidity</span>
+        <span class="badge bw">Web3</span>
+      </p>
+    </div>
+    <img src="data:image/png;base64,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" alt="UEES" style="height:52px; width:auto;">
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" onclick="showTab('exp',this)">Explorador</button>
+      <button class="tab" onclick="showTab('ovf',this)">Overflow lab</button>
+      <button class="tab" onclick="showTab('qz',this)">Quiz rápido</button>
+    </div>
+
+    <!-- EXPLORADOR -->
+    <div id="p-exp" class="panel on">
+      <div class="slbl">Selecciona un tipo de dato</div>
+      <div class="tgrid" id="tgrid"></div>
+      <div class="dbox" id="tdetail"><div class="dtitle">Haz clic en un tipo para ver su ejemplo en Solidity</div></div>
+    </div>
+
+    <!-- OVERFLOW -->
+    <div id="p-ovf" class="panel">
+      <div class="slbl">uint8 — rango válido: 0 a 255</div>
+      <div class="dbox">
+        <div class="rrow"><label>Valor A</label><input type="range" min="0" max="255" value="200" id="vA" oninput="calcOF()" step="1"><span class="rval" id="oA">200</span></div>
+        <div class="rrow"><label>Valor B</label><input type="range" min="0" max="255" value="100" id="vB" oninput="calcOF()" step="1"><span class="rval" id="oB">100</span></div>
+        <div class="chips" id="ofchips"></div>
+      </div>
+      <div id="ofcode"></div>
+      <div class="note">⚠ Antes de Solidity 0.8, contratos reales fueron hackeados por este motivo. OpenZeppelin creó SafeMath para solucionarlo. Desde Solidity 0.8+ la protección está activada por defecto.</div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="p-qz" class="panel">
+      <div class="srow">
+        <div class="schip">Pregunta <span id="qn">1</span> de 5</div>
+        <div class="schip">Puntos: <span id="qs">0</span></div>
+      </div>
+      <div class="pbar"><div class="pfill" id="qbar" style="width:0%"></div></div>
+      <div id="qarea"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── escape helper ──────────────────────────────────────────────────────────
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── syntax highlight (line by line, no regex on tags) ─────────────────────
+const KW = new Set(['pragma','solidity','contract','function','mapping','public','external','view','returns','modifier','require','emit','memory','uint256','uint8','int256','bool','address','bytes32','string','true','false','return','onlyOwner','event','struct']);
+
+function hlLine(raw){
+  // tokenize: split on spaces and punctuation, keep delimiters
+  const tokens = raw.split(/(\s+|[(){};,=!<>+\-*/\[\].])/);
+  return tokens.map(tok => {
+    if(!tok) return '';
+    if(KW.has(tok)) return `<span class="kw">${esc(tok)}</span>`;
+    if(/^"[^"]*"$/.test(tok)) return `<span class="str">${esc(tok)}</span>`;
+    if(/^\d+$/.test(tok)) return `<span class="num">${esc(tok)}</span>`;
+    return esc(tok);
+  }).join('');
+}
+
+function hl(code){
+  return code.split('\n').map(line => {
+    const m = line.match(/^(\s*)(\/\/.*)$/);
+    if(m) return esc(m[1]) + `<span class="cmt">${esc(m[2])}</span>`;
+    // handle inline string literals before tokenizing
+    const sm = line.match(/^(.*?)("(?:[^"\\]|\\.)*")(.*)/);
+    if(sm){
+      return hlLine(sm[1]) + `<span class="str">${esc(sm[2])}</span>` + hlLine(sm[3]);
+    }
+    return hlLine(line);
+  }).join('\n');
+}
+
+function codeBlock(code){
+  return `<pre class="code">${hl(code)}</pre>`;
+}
+
+// ── type data ─────────────────────────────────────────────────────────────
+const TYPES = [
+  { name:'uint256', label:'Entero positivo', desc:'0 a 2²⁵⁶−1. El más usado en tokens y balances.', range:'0 → ~1.16 × 10⁷⁷',
+    code:
+`// Balance de un token ERC-20
+mapping(address => uint256) public balances;
+
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    balances[to]         += amount;
+}`},
+  { name:'int256', label:'Entero con signo', desc:'Positivos y negativos. Útil en finanzas DeFi.', range:'-2¹²⁵ → 2¹²⁵−1',
+    code:
+`// Diferencia de precio en un oráculo DeFi
+int256 public priceDelta;
+
+function updateDelta(int256 newPrice, int256 oldPrice)
+    external {
+    priceDelta = newPrice - oldPrice; // puede ser negativo
+}`},
+  { name:'bool', label:'Booleano', desc:'true o false. Control de acceso y estados del contrato.', range:'true / false',
+    code:
+`// Pausar un contrato de emergencia
+bool public paused = false;
+
+modifier whenNotPaused() {
+    require(!paused, "Contrato pausado");
+    _;
+}
+
+function pause() external onlyOwner {
+    paused = true;
+}`},
+  { name:'address', label:'Dirección', desc:'20 bytes. Identifica wallets y contratos en la red.', range:'0x0000...0000 → 0xFFFF...FFFF',
+    code:
+`// Propietario de un NFT (ERC-721)
+mapping(uint256 => address) public ownerOf;
+
+function mint(address to, uint256 tokenId) public {
+    ownerOf[tokenId] = to;
+    emit Transfer(address(0), to, tokenId);
+}`},
+  { name:'bytes32', label:'Bytes fijos', desc:'32 bytes exactos. Hash de documentos, identidades DID.', range:'32 bytes fijos',
+    code:
+`// Hash de documento — trazabilidad agrícola
+bytes32 public docHash;
+
+function registerDoc(string memory content) external {
+    docHash = keccak256(abi.encodePacked(content));
+    // Sello notarial on-chain
+}`},
+  { name:'string', label:'Texto variable', desc:'Texto de longitud variable. Nombres, URIs de NFTs.', range:'Longitud variable',
+    code:
+`// URI de metadata de un NFT
+string public baseURI;
+
+function tokenURI(uint256 tokenId)
+    public view returns (string memory) {
+    return string(abi.encodePacked(baseURI, tokenId));
+}`},
+];
+
+// ── quiz data ─────────────────────────────────────────────────────────────
+const QUIZ = [
+  { q:'¿Qué tipo usarías para guardar el balance de tokens de un usuario?',
+    opts:['int256','uint256','bool','address'], ans:1,
+    exp:'uint256 porque los balances nunca son negativos y necesitan el mayor rango posible.' },
+  { q:'Un contrato necesita guardar la wallet del dueño. ¿Qué tipo es correcto?',
+    opts:['bytes32','string','address','uint256'], ans:2,
+    exp:'address almacena exactamente una dirección Ethereum de 20 bytes.' },
+  { q:'Para pausar un contrato con bandera on/off, ¿qué tipo usas?',
+    opts:['uint8','bool','string','int256'], ans:1,
+    exp:'bool es perfecto para estados binarios como paused = true / false.' },
+  { q:'¿Qué tipo guarda el resultado de keccak256() de un documento?',
+    opts:['string','uint256','bytes32','address'], ans:2,
+    exp:'keccak256 devuelve exactamente 32 bytes — bytes32 es el tipo natural.' },
+  { q:'En Solidity 0.7 sin SafeMath, uint8 con 200 + 100 devuelve…',
+    opts:['Error de compilación','300','44  ← overflow','255'], ans:2,
+    exp:'300 mod 256 = 44. Una vulnerabilidad real explotada en contratos históricos.' },
+];
+
+// ── tabs ──────────────────────────────────────────────────────────────────
+function showTab(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='ovf') calcOF();
+  if(id==='qz')  renderQ();
+}
+
+// ── explorer ──────────────────────────────────────────────────────────────
+(function renderCards(){
+  document.getElementById('tgrid').innerHTML = TYPES.map((t,i)=>`
+    <div class="tcard" onclick="pick(${i})" id="tc${i}">
+      <div class="tclbl">${t.label}</div>
+      <div class="tcname">${t.name}</div>
+      <div class="tcdesc">${t.desc}</div>
+    </div>`).join('');
+})();
+
+function pick(i){
+  document.querySelectorAll('.tcard').forEach(c=>c.classList.remove('on'));
+  document.getElementById('tc'+i).classList.add('on');
+  const t=TYPES[i];
+  document.getElementById('tdetail').innerHTML=
+    `<div class="dtitle">${t.name} &nbsp;·&nbsp; Rango: <strong>${t.range}</strong></div>`+
+    codeBlock(t.code);
+}
+
+// ── overflow lab ──────────────────────────────────────────────────────────
+function calcOF(){
+  const a=+document.getElementById('vA').value;
+  const b=+document.getElementById('vB').value;
+  document.getElementById('oA').textContent=a;
+  document.getElementById('oB').textContent=b;
+  const sum=a+b, over=sum>255, res=sum%256;
+  document.getElementById('ofchips').innerHTML=
+    `<span class="chip cn">${a} + ${b} = ${sum}</span>`+
+    `<span class="chip ${over?'cov':'cok'}">${over?'¡Overflow! → resultado real: '+res:'✓ OK — dentro del rango'}</span>`;
+  document.getElementById('ofcode').innerHTML=codeBlock(
+`// Solidity < 0.8  (sin SafeMath)
+uint8 a = ${a};
+uint8 b = ${b};
+uint8 result = a + b;
+// result = ${over ? res+' ← INCORRECTO (overflow)' : sum+' ← correcto'}
+
+// Solidity >= 0.8  (protección automática)
+// Si sum > 255 → el contrato hace revert automáticamente`);
+}
+
+// ── quiz ──────────────────────────────────────────────────────────────────
+let qi=0, qs=0, done=false;
+
+function renderQ(){
+  if(qi>=QUIZ.length){fin();return;}
+  const q=QUIZ[qi]; done=false;
+  document.getElementById('qn').textContent=qi+1;
+  document.getElementById('qs').textContent=qs;
+  document.getElementById('qbar').style.width=(qi/QUIZ.length*100)+'%';
+  document.getElementById('qarea').innerHTML=
+    `<div class="qq">${q.q}</div>`+
+    `<div class="qopts">${q.opts.map((o,i)=>`<button class="qopt" onclick="ans(${i})" id="qo${i}">${o}</button>`).join('')}</div>`+
+    `<div id="qfb"></div>`+
+    `<div class="nrow" id="qnav" style="display:none"><button class="btnp" onclick="nextQ()">${qi<QUIZ.length-1?'Siguiente →':'Ver resultado'}</button></div>`;
+}
+
+function ans(i){
+  if(done)return; done=true;
+  const q=QUIZ[qi];
+  document.querySelectorAll('.qopt').forEach(o=>o.classList.add('lk'));
+  if(i===q.ans){
+    document.getElementById('qo'+i).classList.add('ok');
+    qs++; document.getElementById('qs').textContent=qs;
+    document.getElementById('qfb').innerHTML=`<div class="fb fbok">✓ Correcto — ${q.exp}</div>`;
+  } else {
+    document.getElementById('qo'+i).classList.add('no');
+    document.getElementById('qo'+q.ans).classList.add('ok');
+    document.getElementById('qfb').innerHTML=`<div class="fb fbno">✗ Incorrecto. ${q.exp}</div>`;
+  }
+  document.getElementById('qnav').style.display='flex';
+}
+
+function nextQ(){qi++;renderQ();}
+
+function fin(){
+  const p=Math.round(qs/QUIZ.length*100);
+  document.getElementById('qbar').style.width='100%';
+  document.getElementById('qarea').innerHTML=
+    `<div class="fin">
+      <div class="fsc">${qs}/${QUIZ.length}</div>
+      <div class="fmsg">${p>=80?'¡Excelente dominio de tipos de datos!':p>=60?'Buen trabajo — repasa los casos de overflow.':'Sigue practicando, los tipos son la base de todo.'}</div>
+      <button class="btnp" onclick="reset()">Reintentar</button>
+    </div>`;
+}
+
+function reset(){qi=0;qs=0;renderQ();}
+</script>
+</body>
+</html>
