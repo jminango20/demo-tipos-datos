@@ -273,15 +273,15 @@ function tokenURI(uint256 tokenId)
 
 // ── quiz data ─────────────────────────────────────────────────────────────
 const QUIZ = [
-  { q:'¿Qué tipo usarías para guardar el balance de tokens de un usuario?',
-    opts:['int256','uint256','bool','address'], ans:1,
-    exp:'uint256 porque los balances nunca son negativos y necesitan el mayor rango posible.' },
-  { q:'Un contrato necesita guardar la wallet del dueño. ¿Qué tipo es correcto?',
-    opts:['bytes32','string','address','uint256'], ans:2,
-    exp:'address almacena exactamente una dirección Ethereum de 20 bytes.' },
-  { q:'En Solidity 0.7 sin SafeMath, uint8 con 200 + 100 devuelve…',
-    opts:['Error de compilación','300','44  ← overflow','255'], ans:2,
-    exp:'300 mod 256 = 44. Una vulnerabilidad real explotada en contratos históricos.' },
+  { q:'¿Qué tipo usarías para guardar si un contrato está pausado o no (verdadero/falso)?',
+    opts:['string','int','bool','float'], ans:2,
+    exp:'bool es el tipo correcto para estados binarios: verdadero o falso, sí o no.' },
+  { q:'¿Qué tipo usarías para guardar el nombre de una persona — texto de longitud variable?',
+    opts:['bool','int','char','string'], ans:3,
+    exp:'string almacena texto de cualquier longitud, como nombres, frases o direcciones.' },
+  { q:'Si saldoJuan y saldoAndres son uint8 (0-255) y su suma pasa de 255, ¿qué ocurre?',
+    opts:['Error de compilación','Da el resultado correcto','Da 44 — overflow','Se queda en 255'], ans:2,
+    exp:'300 mod 256 = 44. El tipo se "desborda" y el dato pierde su valor real — una vulnerabilidad real en contratos históricos.' },
 ];
 
 // ── tabs ──────────────────────────────────────────────────────────────────
