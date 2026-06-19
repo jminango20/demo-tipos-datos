@@ -163,7 +163,7 @@ pre.code .num { color:#fab387; }
     <!-- QUIZ -->
     <div id="p-qz" class="panel">
       <div class="srow">
-        <div class="schip">Pregunta <span id="qn">1</span> de 5</div>
+        <div class="schip">Pregunta <span id="qn">1</span> de <span id="qtotal">3</span></div>
         <div class="schip">Puntos: <span id="qs">0</span></div>
       </div>
       <div class="pbar"><div class="pfill" id="qbar" style="width:0%"></div></div>
@@ -279,12 +279,6 @@ const QUIZ = [
   { q:'Un contrato necesita guardar la wallet del dueño. ¿Qué tipo es correcto?',
     opts:['bytes32','string','address','uint256'], ans:2,
     exp:'address almacena exactamente una dirección Ethereum de 20 bytes.' },
-  { q:'Para pausar un contrato con bandera on/off, ¿qué tipo usas?',
-    opts:['uint8','bool','string','int256'], ans:1,
-    exp:'bool es perfecto para estados binarios como paused = true / false.' },
-  { q:'¿Qué tipo guarda el resultado de keccak256() de un documento?',
-    opts:['string','uint256','bytes32','address'], ans:2,
-    exp:'keccak256 devuelve exactamente 32 bytes — bytes32 es el tipo natural.' },
   { q:'En Solidity 0.7 sin SafeMath, uint8 con 200 + 100 devuelve…',
     opts:['Error de compilación','300','44  ← overflow','255'], ans:2,
     exp:'300 mod 256 = 44. Una vulnerabilidad real explotada en contratos históricos.' },
@@ -358,6 +352,7 @@ function renderQ(){
   if(qi>=QUIZ.length){fin();return;}
   const q=QUIZ[qi]; done=false;
   document.getElementById('qn').textContent=qi+1;
+  document.getElementById('qtotal').textContent=QUIZ.length;
   document.getElementById('qs').textContent=qs;
   document.getElementById('qbar').style.width=(qi/QUIZ.length*100)+'%';
   document.getElementById('qarea').innerHTML=
@@ -386,12 +381,11 @@ function ans(i){
 function nextQ(){qi++;renderQ();}
 
 function fin(){
-  const p=Math.round(qs/QUIZ.length*100);
   document.getElementById('qbar').style.width='100%';
   document.getElementById('qarea').innerHTML=
     `<div class="fin">
       <div class="fsc">${qs}/${QUIZ.length}</div>
-      <div class="fmsg">${p>=80?'¡Excelente dominio de tipos de datos!':p>=60?'Buen trabajo — repasa los casos de overflow.':'Sigue practicando, los tipos son la base de todo.'}</div>
+      <div class="fmsg">¡Gracias por su atención!</div>
       <button class="btnp" onclick="reset()">Reintentar</button>
     </div>`;
 }
