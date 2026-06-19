@@ -157,7 +157,7 @@ pre.code .num { color:#fab387; }
         <div class="chips" id="ofchips"></div>
       </div>
       <div id="ofcode"></div>
-      <div class="note">⚠ Si saldoJuan y saldoAndres fueran cuentas reales en un banco descentralizado, este error significaría perder dinero de verdad. Antes de Solidity 0.8, contratos reales fueron hackeados por este motivo. OpenZeppelin creó SafeMath para solucionarlo. Desde Solidity 0.8+ la protección está activada por defecto.</div>
+      <div class="note">⚠ Si esto fuera una cuenta real, Juan perdería su dinero por un simple error de tipo de dato.</div>
     </div>
 
     <!-- QUIZ -->
@@ -333,8 +333,7 @@ function calcOF(){
 
   // un solo bloque: código + línea de salida de consola integrada + nota de protección
   const codeLines = esc(
-`// Solidity < 0.8  (sin SafeMath)
-uint8 saldoJuan   = ${a};
+`uint8 saldoJuan   = ${a};
 uint8 saldoAndres = ${b};
 uint8 total = saldoJuan + saldoAndres;
 
@@ -346,11 +345,7 @@ console.log(total);`)
     `<span class="console-arrow">›</span> ${over ? res : sum}` +
     (over ? `  <span class="console-bad">← INCORRECTO (overflow)</span>` : `  <span class="console-good">← correcto</span>`);
 
-  const protectionNote = esc(
-`
-// Solidity >= 0.8  (protección automática)
-// Si el total > 255 → el contrato hace revert automáticamente`)
-    .replace(/\/\/.*/g, m=>`<span class="cmt">${m}</span>`);
+  const protectionNote = '';
 
   document.getElementById('ofcode').innerHTML =
     `<pre class="code">${codeLines}\n<span class="console-line">${outputLine}</span>${protectionNote}</pre>`;
