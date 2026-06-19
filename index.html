@@ -72,6 +72,20 @@ pre.code .cmt { color:#585b70; font-style:italic; }
 pre.code .fn  { color:#89dceb; }
 pre.code .num { color:#fab387; }
 
+/* línea de salida de consola — integrada en el mismo bloque negro */
+.console-line {
+  display:inline-block;
+  background:rgba(255,255,255,0.06);
+  border-left:3px solid #534AB7;
+  padding:4px 10px;
+  margin:2px 0;
+  font-weight:700;
+  border-radius:3px;
+}
+.console-arrow { color:#6c7086; }
+.console-bad  { color:#f38ba8; font-weight:700; }
+.console-good { color:#a6e3a1; font-weight:700; }
+
 /* overflow lab */
 .rrow { display:flex; align-items:center; gap:12px; margin:12px 0; }
 .rrow label { font-size:13px; color:var(--tx2); min-width:80px; }
@@ -312,20 +326,34 @@ function calcOF(){
   document.getElementById('oA').textContent=a;
   document.getElementById('oB').textContent=b;
   const sum=a+b, over=sum>255, res=sum%256;
+
+  // arriba: solo la suma simple, sin veredicto (evita duplicar el resultado)
   document.getElementById('ofchips').innerHTML=
-    `<span class="chip cn">Juan (${a}) + Andrés (${b}) = ${sum}</span>`+
-    `<span class="chip ${over?'cov':'cok'}">${over?'¡Overflow! → el contrato registra: '+res:'✓ OK — dentro del rango'}</span>`;
-  document.getElementById('ofcode').innerHTML=codeBlock(
+    `<span class="chip cn">Juan (${a}) + Andrés (${b}) = ${sum}</span>`;
+
+  // un solo bloque: código + línea de salida de consola integrada + nota de protección
+  const codeLines = esc(
 `// Solidity < 0.8  (sin SafeMath)
 uint8 saldoJuan   = ${a};
 uint8 saldoAndres = ${b};
 uint8 total = saldoJuan + saldoAndres;
 
-console.log(total);
-// → ${over ? res+'   ← INCORRECTO (overflow)' : sum+'   ← correcto'}
+console.log(total);`)
+    .replace(/\/\/.*/g, m=>`<span class="cmt">${m}</span>`)
+    .replace(/\b(uint8|console|log)\b/g, '<span class="kw">$1</span>');
 
+  const outputLine =
+    `<span class="console-arrow">›</span> ${over ? res : sum}` +
+    (over ? `  <span class="console-bad">← INCORRECTO (overflow)</span>` : `  <span class="console-good">← correcto</span>`);
+
+  const protectionNote = esc(
+`
 // Solidity >= 0.8  (protección automática)
-// Si el total > 255 → el contrato hace revert automáticamente`);
+// Si el total > 255 → el contrato hace revert automáticamente`)
+    .replace(/\/\/.*/g, m=>`<span class="cmt">${m}</span>`);
+
+  document.getElementById('ofcode').innerHTML =
+    `<pre class="code">${codeLines}\n<span class="console-line">${outputLine}</span>${protectionNote}</pre>`;
 }
 
 // ── quiz ──────────────────────────────────────────────────────────────────
