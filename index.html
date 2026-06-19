@@ -244,7 +244,7 @@ const QUIZ = [
   { q:'¿Qué tipo usarías para guardar el nombre de una persona — texto de longitud variable?',
     opts:['bool','int','char','string'], ans:3,
     exp:'string almacena texto de cualquier longitud, como nombres, frases o direcciones.' },
-  { q:'Si saldoJuan y saldoAndres son uint8 (0-255) y su suma pasa de 255, ¿qué ocurre?',
+  { q:'Si saldoJuan = 200 y saldoAndres = 100 (ambos uint8, rango 0-255), ¿qué da total = saldoJuan + saldoAndres?',
     opts:['Error de compilación','Da el resultado correcto','Da 44 — overflow','Se queda en 255'], ans:2,
     exp:'300 mod 256 = 44. El tipo se "desborda" y el dato pierde su valor real — una vulnerabilidad real en contratos históricos.' },
 ];
