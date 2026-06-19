@@ -212,62 +212,27 @@ function codeBlock(code){
 const TYPES = [
   { name:'uint256', label:'Entero positivo', desc:'0 a 2²⁵⁶−1. El más usado en tokens y balances.', range:'0 → ~1.16 × 10⁷⁷',
     code:
-`// Balance de un token ERC-20
-mapping(address => uint256) public balances;
+`// Balance de un usuario
+uint256 public balance;
 
-function transfer(address to, uint256 amount) public {
-    require(balances[msg.sender] >= amount);
-    balances[msg.sender] -= amount;
-    balances[to]         += amount;
-}`},
-  { name:'int256', label:'Entero con signo', desc:'Positivos y negativos. Útil en finanzas DeFi.', range:'-2¹²⁵ → 2¹²⁵−1',
-    code:
-`// Diferencia de precio en un oráculo DeFi
-int256 public priceDelta;
-
-function updateDelta(int256 newPrice, int256 oldPrice)
-    external {
-    priceDelta = newPrice - oldPrice; // puede ser negativo
+function actualizarBalance(uint256 nuevoValor) public {
+    balance = nuevoValor;
 }`},
   { name:'bool', label:'Booleano', desc:'true o false. Control de acceso y estados del contrato.', range:'true / false',
     code:
-`// Pausar un contrato de emergencia
-bool public paused = false;
+`// Estado de pausa de un contrato
+bool public paused;
 
-modifier whenNotPaused() {
-    require(!paused, "Contrato pausado");
-    _;
-}
-
-function pause() external onlyOwner {
-    paused = true;
-}`},
-  { name:'address', label:'Dirección', desc:'20 bytes. Identifica wallets y contratos en la red.', range:'0x0000...0000 → 0xFFFF...FFFF',
-    code:
-`// Propietario de un NFT (ERC-721)
-mapping(uint256 => address) public ownerOf;
-
-function mint(address to, uint256 tokenId) public {
-    ownerOf[tokenId] = to;
-    emit Transfer(address(0), to, tokenId);
-}`},
-  { name:'bytes32', label:'Bytes fijos', desc:'32 bytes exactos. Hash de documentos, identidades DID.', range:'32 bytes fijos',
-    code:
-`// Hash de documento — trazabilidad agrícola
-bytes32 public docHash;
-
-function registerDoc(string memory content) external {
-    docHash = keccak256(abi.encodePacked(content));
-    // Sello notarial on-chain
+function actualizarPaused(bool nuevoValor) public {
+    paused = nuevoValor;
 }`},
   { name:'string', label:'Texto variable', desc:'Texto de longitud variable. Nombres, URIs de NFTs.', range:'Longitud variable',
     code:
-`// URI de metadata de un NFT
-string public baseURI;
+`// Nombre de un usuario o token
+string public nombre;
 
-function tokenURI(uint256 tokenId)
-    public view returns (string memory) {
-    return string(abi.encodePacked(baseURI, tokenId));
+function actualizarNombre(string memory nuevoValor) public {
+    nombre = nuevoValor;
 }`},
 ];
 
